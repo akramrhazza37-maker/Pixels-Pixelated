@@ -1,0 +1,9 @@
+# Ignore the heavy dependencies folder
+node_modules/
+
+# Ignore system log files
+.DS_Store
+*.log
+
+# Ignore environment/secret configuration files (if you create them later)
+.env
