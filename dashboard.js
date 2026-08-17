@@ -21,3 +21,9 @@ function logout() {
     localStorage.removeItem('userEmail');
     window.location.href = 'LoginPage.html';
 }
+function closeDashboard() {
+    const card = document.querySelector('.dashboard-card');
+    if (card) {
+        card.style.display = 'none';
+    }
+}

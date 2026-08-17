@@ -60,3 +60,18 @@ body {
     font-size: 16px;
     line-height: 1.5;
 }
+.close-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.close-btn:hover {
+    background-color: #cc0000;
+}
