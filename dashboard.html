@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="dashboard.css">
-    <title>My Workspace</title>
+    <title>Pixels Pixelated - Dashboard</title>
 </head>
 <body>
-    <div class="dashboard-container">
-        <header>
-            <h1>Dashboard</h1>
-            <button onclick="logout()">Logout</button>
-        </header>
 
-        <div class="card">
-            <h2>Welcome to your workspace</h2>
-            <p>Manage your projects with precision.</p>
+    <div class="dashboard-card">
+        <div class="dashboard-header">
+            <h1>Workspace</h1>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </div>
+
+        <div class="dashboard-content">
+            <h2>Welcome Back!</h2>
+            <p>You have successfully logged into your pixel workspace.</p>
+            <p id="user-display-email"></p>
         </div>
     </div>
+
     <script src="dashboard.js"></script>
 </body>
 </html>

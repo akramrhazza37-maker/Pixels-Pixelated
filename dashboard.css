@@ -1,51 +1,62 @@
-:root {
-    --bg-color: #f4f7f9; /* Light, soft background */
-    --card-bg: #ffffff;  /* Pure white cards */
-    --accent-blue: #007aff; /* Clean, professional blue */
-    --text-primary: #1a1a1a;
-    --text-secondary: #666666;
-    --border-color: #e0e0e0;
-}
-
 body {
-    background-color: var(--bg-color);
-    font-family: 'Segoe UI', Roboto, sans-serif;
-    color: var(--text-primary);
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    /* Uses the same background image style as your login page */
+    background: url('backgroundImage.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-.dashboard-container {
-    max-width: 1200px;
-    margin: 0 auto;
+/* Same white rounded card layout as your login form */
+.dashboard-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
 }
 
-/* Header style - very clean */
-header {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 20px;
+.dashboard-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
 }
 
-/* Card layout - like Canva */
-.card {
-    background: var(--card-bg);
-    padding: 24px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+.dashboard-header h1 {
+    color: #1a1a1a;
+    font-size: 24px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-button {
-    background-color: var(--accent-blue);
+/* Matches your bright blue "LOGIN NOW!" button style */
+.logout-btn {
+    background-color: #00bfff;
     color: white;
     border: none;
     padding: 10px 20px;
-    border-radius: 6px;
+    border-radius: 20px;
+    font-weight: bold;
     cursor: pointer;
-    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: #009acd;
+}
+
+.dashboard-content p {
+    color: #555555;
+    font-size: 16px;
+    line-height: 1.5;
 }

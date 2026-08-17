@@ -1,23 +1,21 @@
-// Check if user is authenticated via local storage
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', () => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     const userEmail = localStorage.getItem('userEmail');
 
+    // If not logged in, kick them back to the login page
     if (!isLoggedIn) {
-        // If not logged in, kick them back to login page
         window.location.href = 'LoginPage.html';
         return;
     }
 
-    // Display the user's logged-in email dynamically
-    if (userEmail) {
-        const emailElement = document.getElementById('display-email');
-        if (emailElement) {
-            emailElement.innerText = userEmail;
-        }
+    // Display user email if element exists
+    const emailDisplay = document.getElementById('user-display-email');
+    if (emailDisplay && userEmail) {
+        emailDisplay.innerText = "Logged in as: " + userEmail;
     }
-};
+});
 
+// Logout function attached to the button
 function logout() {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userEmail');
