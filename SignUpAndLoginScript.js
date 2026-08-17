@@ -17,10 +17,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
             let errors = [];
 
-            const isSignupPage = firstname_input !== null;
+            const isSignup = firstname_input !== null;
 
 
-            if (isSignupPage) {
+            if (isSignup) {
 
                 errors = getSignupFormErrors(
                     firstname_input.value,
@@ -53,14 +53,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 const API_URL = "http://localhost:3000";
 
 
-                const endpoint = isSignupPage
+                const endpoint = isSignup
                     ? "/signup"
                     : "/login";
 
 
                 const data = {
 
-                    username: isSignupPage
+                    username: isSignup
                         ? firstname_input.value
                         : undefined,
 
@@ -83,26 +83,34 @@ window.addEventListener('DOMContentLoaded', () => {
 
                 });
 
+
+
                 const result = await response.json();
 
-                if (!response.ok) {
-                    error_message.innerText = result.error || "Login failed.";
-                    return;
+
+
+                const result = await response.json();
+
+
+
+                if (response.ok) {
+                    const result = await response.json();
+                    error_message.innerText = ""; 
+
+                    const isSignup = document.getElementById('FirstName-input') !== null;
+
+                    if (!isSignup) {
+                        // Save state and redirect immediately without an alert popup
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('userEmail', email_input.value);
+                        window.location.href = 'dashboard.html'; 
+                    } else {
+                        form.reset();
+                        window.location.href = 'LoginPage.html';
+                    }
                 }
 
-                // Clear out any lingering red error text immediately
-                error_message.innerText = "";
 
-                alert(result.message || "Success!");
-
-                if (!isSignupPage) {
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userEmail', email_input.value);
-                    window.location.href = 'dashboard.html';
-                } else {
-                    form.reset();
-                    window.location.href = 'LoginPage.html';
-                }
 
             } catch (error) {
 

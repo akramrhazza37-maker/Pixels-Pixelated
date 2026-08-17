@@ -7,3 +7,8 @@ node_modules/
 
 # Ignore environment/secret configuration files (if you create them later)
 .env
+
+
+test.env
+.env
+node_modules/
