@@ -1,45 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixels Pixelated Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="dashboard.css">
+    <title>My Workspace</title>
 </head>
 <body>
-
     <div class="dashboard-container">
         <header>
-            <h1>// SYSTEM.ACCESS_GRANTED</h1>
-            <div class="status-badge">SECURE_LINK: ACTIVE</div>
+            <h1>Dashboard</h1>
+            <button onclick="logout()">Logout</button>
         </header>
 
-        <div class="grid-layout">
-            <!-- User Identity Panel -->
-            <div class="panel user-info">
-                <h2>USER IDENTITY</h2>
-                <p>ACCESS LEVEL: <span>OPERATOR</span></p>
-                <p>TARGET ACCOUNT: <span id="display-email">LOADING...</span></p>
-                <p>ENCRYPTION: <span>AES-256-GCM</span></p>
-            </div>
-
-            <!-- Terminal Stream Panel -->
-            <div class="panel">
-                <h2>LIVE LOG STREAM</h2>
-                <div class="terminal-box" id="terminal-logs">
-                    > Initializing kernel sequence...<br>
-                    > Connecting to Aiven cluster node...<br>
-                    > Session token validated successfully.<br>
-                    > Welcome back, User.
-                </div>
-            </div>
+        <div class="card">
+            <h2>Welcome to your workspace</h2>
+            <p>Manage your projects with precision.</p>
         </div>
-
-        <button class="btn-cyber" onclick="logout()">TERMINATE SESSION</button>
     </div>
-
-    <!-- Link to the separate JavaScript file -->
     <script src="dashboard.js"></script>
 </body>
 </html>
