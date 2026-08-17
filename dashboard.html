@@ -8,11 +8,14 @@
 </head>
 <body>
 
+    <!-- Profile Button fixed at the top right corner of the page -->
+    <button class="top-right-profile-btn" onclick="openProfileModal()">PROFILE</button>
+
     <div class="dashboard-card">
         <div class="dashboard-header">
             <h1>Workspace</h1>
             <div class="header-buttons">
-                <button class="profile-btn" onclick="openProfileModal()">PROFILE</button>
+                <button class="close-btn" onclick="closeDashboard()">CLOSE</button>
                 <button class="logout-btn" onclick="logout()">LOGOUT</button>
             </div>
         </div>
@@ -24,7 +27,7 @@
         </div>
     </div>
 
-    <!-- Edit Profile Modal Overlay -->
+    <!-- Edit Profile Modal -->
     <div id="profile-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <h3>Edit Profile</h3>

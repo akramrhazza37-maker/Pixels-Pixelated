@@ -1,10 +1,20 @@
-.header-buttons {
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: url('backgroundImage.jpg') no-repeat center center fixed;
+    background-size: cover;
     display: flex;
-    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-/* Matches your theme buttons */
-.profile-btn {
+/* Fixed Profile Button on the Top Right Corner of the Page */
+.top-right-profile-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -12,17 +22,86 @@
     border-radius: 20px;
     font-weight: bold;
     cursor: pointer;
+    z-index: 1000;
     transition: background-color 0.2s ease;
 }
 
-.profile-btn:hover {
+.top-right-profile-btn:hover {
     background-color: #45a049;
+}
+
+.dashboard-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.dashboard-header h1 {
+    color: #1a1a1a;
+    font-size: 24px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.close-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.close-btn:hover {
+    background-color: #cc0000;
+}
+
+.logout-btn {
+    background-color: #00bfff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: #009acd;
+}
+
+.dashboard-content p {
+    color: #555555;
+    font-size: 16px;
+    line-height: 1.5;
 }
 
 /* Modal Popup Styling */
 .modal {
     position: fixed;
-    z-index: 1000;
+    z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
