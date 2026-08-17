@@ -100,11 +100,12 @@ window.addEventListener('DOMContentLoaded', () => {
                     const isSignup = document.getElementById('FirstName-input') !== null;
 
                     if (!isSignup) {
-                        // Save state and redirect immediately without an alert popup
+                        // This is the login flow - save data and redirect immediately
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('userEmail', email_input.value);
                         window.location.href = 'dashboard.html'; 
                     } else {
+                        alert(result.message || "Success!");
                         form.reset();
                         window.location.href = 'LoginPage.html';
                     }
