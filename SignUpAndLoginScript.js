@@ -17,10 +17,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
             let errors = [];
 
-            const isSignup = firstname_input !== null;
+            const isSignupPage = firstname_input !== null;
 
 
-            if (isSignup) {
+            if (isSignupPage) {
 
                 errors = getSignupFormErrors(
                     firstname_input.value,
@@ -53,14 +53,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 const API_URL = "http://localhost:3000";
 
 
-                const endpoint = isSignup
+                const endpoint = isSignupPage
                     ? "/signup"
                     : "/login";
 
 
                 const data = {
 
-                    username: isSignup
+                    username: isSignupPage
                         ? firstname_input.value
                         : undefined,
 
@@ -83,26 +83,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
                 });
 
-
-
                 const result = await response.json();
 
-
-
-                if (response.ok) {
-
-                    alert(result.message || "Success!");
-
-                    form.reset();
-
-                } else {
-
-                    error_message.innerText =
-                        result.error || "Something went wrong.";
-
+                if (!response.ok) {
+                    error_message.innerText = result.error || "Login failed.";
+                    return;
                 }
 
+                // Clear out any lingering red error text immediately
+                error_message.innerText = "";
 
+                alert(result.message || "Success!");
+
+                if (!isSignupPage) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', email_input.value);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    form.reset();
+                    window.location.href = 'LoginPage.html';
+                }
 
             } catch (error) {
 

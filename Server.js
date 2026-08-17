@@ -1,11 +1,24 @@
-require('dotenv').config();
 const express = require('express');
+const app = express();
+const path = require('path');
+
+// This allows your server to "see" and send dashboard.html
+app.use(express.static(path.join(__dirname))); 
+
+// If you need a specific route:
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dashboard.html'));
+});
+require('dotenv').config({ path: './test.env' });
+
+console.log("DB_PASSWORD Loaded:", process.env.DB_PASSWORD ? "Yes" : "No");
+
 const mysql = require('mysql2');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 
-const app = express();
+
 
 app.use(cors());
 app.use(express.json());
@@ -28,8 +41,8 @@ const pool = mysql.createPool({
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER || 'YOUR_EMAIL@gmail.com',         // Safe environment variable
-        pass: process.env.EMAIL_PASS || 'your_16char_app_password'     // Safe environment variable
+        user: process.env.EMAIL_USER || 'YOUR_EMAIL@gmail.com',         
+        pass: process.env.EMAIL_PASS || 'your_16char_app_password'     
     }
 });
 
@@ -37,47 +50,61 @@ const transporter = nodemailer.createTransport({
 app.post('/signup', (req, res) => {
     const { username, email, password } = req.body;
     const sqlQuery = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
-    
-    bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
-    if (hashErr) {
-        return res.status(500).json({ error: "Password encryption failed." });
-    }
 
-    pool.query(sqlQuery, [username, email, hashedPassword], (err, result) => {
-        if (err) {
-            if (err.code === 'ER_DUP_ENTRY') {
-                console.log(`⚠️ Signup attempt rejected: Duplicate entry found.`);
-                if (err.message.includes('username')) {
-                    return res.status(400).json({ error: "This username is already taken." });
-                } else {
-                    return res.status(400).json({ error: "This email address is already registered." });
-                }
-            }
-            console.error("❌ Database Save Error:", err.message);
-            return res.status(500).json({ error: "Failed to store user details in database." });
+    bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
+        if (hashErr) {
+            return res.status(500).json({ error: "Password encryption failed." });
         }
-        console.log(`✅ Successfully registered user: ${username} (${email})`);
-        return res.status(200).json({ message: "Registration successful! Account has been saved." });
+
+        pool.query(sqlQuery, [username, email, hashedPassword], (err, result) => {
+            if (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
+                    console.log(`⚠️ Signup attempt rejected: Duplicate entry found.`);
+
+                    if (err.message.includes('username')) {
+                        return res.status(400).json({ error: "This username is already taken." });
+                    } else {
+                        return res.status(400).json({ error: "This email address is already registered." });
+                    }
+                }
+
+                console.error("❌ Database Save Error:", err.message);
+                return res.status(500).json({ error: "Failed to store user details in database." });
+            }
+
+            console.log(`✅ Successfully registered user: ${username} (${email})`);
+            return res.status(200).json({
+                message: "Registration successful! Account has been saved."
+            });
+        });
     });
 });
 
-// ROUTE 2: Handle User Login Form Data
+// ROUTE 2: Handle User Login Form Data (Updated to use bcrypt.compare)
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
-    const sqlQuery = 'SELECT * FROM users WHERE email = ? AND password = ?';
+    const sqlQuery = 'SELECT * FROM users WHERE email = ?';
 
-    pool.query(sqlQuery, [email, password], (err, results) => {
+    pool.query(sqlQuery, [email], (err, results) => {
         if (err) {
             console.error("❌ Database Authentication Error:", err.message);
             return res.status(500).json({ error: "Server authentication error." });
         }
 
-        if (results.length > 0) {
-            console.log(`🔓 User logged in successfully: ${email}`);
-            return res.status(200).json({ message: "Login verified successfully! Welcome back." });
-        } else {
+        if (results.length === 0) {
             return res.status(401).json({ error: "Invalid email or password mismatch." });
         }
+
+        const user = results[0];
+
+        bcrypt.compare(password, user.password, (bcryptErr, match) => {
+            if (bcryptErr || !match) {
+                return res.status(401).json({ error: "Invalid email or password mismatch." });
+            }
+
+            console.log(`🔓 User logged in successfully: ${email}`);
+            return res.status(200).json({ message: "Login verified successfully! Welcome back." });
+        });
     });
 });
 
@@ -125,6 +152,7 @@ app.post('/reset-password', (req, res) => {
         if (err) return res.status(500).json({ error: "Server authentication error." });
         if (results.length === 0) return res.status(400).json({ error: "Invalid pin, incorrect email, or security token expired." });
 
+        // Note: For best practices, you should also hash the newPassword here with bcrypt before saving!
         const updateQuery = 'UPDATE users SET password = ?, reset_pin = NULL, pin_expires = NULL WHERE email = ?';
         pool.query(updateQuery, [newPassword, email], (err) => {
             if (err) return res.status(500).json({ error: "Password update compilation error." });
@@ -133,6 +161,7 @@ app.post('/reset-password', (req, res) => {
         });
     });
 });
+
 pool.getConnection((err, connection) => {
     if (err) {
         console.log("❌ Aiven MySQL connection failed:");
@@ -142,12 +171,11 @@ pool.getConnection((err, connection) => {
         connection.release();
     }
 });
-// Initialize Server listener state on Port 3000
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`===================================================`);
     console.log(`🚀 Server successfully launched and listening active`);
     console.log(`🔗 Endpoint URL: http://localhost:${PORT}`);
     console.log(`===================================================`);
-});
 });
