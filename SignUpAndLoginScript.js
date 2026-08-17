@@ -72,35 +72,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
                 const response = await fetch(API_URL + endpoint, {
-
                     method: "POST",
-
                     headers: {
                         "Content-Type": "application/json"
                     },
-
                     body: JSON.stringify(data)
-
                 });
 
-
-
+                // Declare 'result' only ONCE here:
                 const result = await response.json();
-
-
-
-                const result = await response.json();
-
-
 
                 if (response.ok) {
-                    const result = await response.json();
                     error_message.innerText = ""; 
 
                     const isSignup = document.getElementById('FirstName-input') !== null;
 
                     if (!isSignup) {
-                        // This is the login flow - save data and redirect immediately
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('userEmail', email_input.value);
                         window.location.href = 'dashboard.html'; 
@@ -109,6 +96,8 @@ window.addEventListener('DOMContentLoaded', () => {
                         form.reset();
                         window.location.href = 'LoginPage.html';
                     }
+                } else {
+                    error_message.innerText = result.error || "Something went wrong.";
                 }
 
 
