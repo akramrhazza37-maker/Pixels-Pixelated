@@ -1,77 +1,98 @@
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-    /* Uses the same background image style as your login page */
-    background: url('backgroundImage.jpg') no-repeat center center fixed;
-    background-size: cover;
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Matches your theme buttons */
+.profile-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.profile-btn:hover {
+    background-color: #45a049;
+}
+
+/* Modal Popup Styling */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
 }
 
-/* Same white rounded card layout as your login form */
-.dashboard-card {
+.modal-content {
     background: #ffffff;
-    padding: 40px;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    border-radius: 16px;
     width: 100%;
-    max-width: 600px;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: #1a1a1a;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555555;
+    font-weight: bold;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
     box-sizing: border-box;
 }
 
-.dashboard-header {
+.modal-buttons {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 15px;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
-.dashboard-header h1 {
-    color: #1a1a1a;
-    font-size: 24px;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Matches your bright blue "LOGIN NOW!" button style */
-.logout-btn {
+.save-btn {
     background-color: #00bfff;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 8px 16px;
+    border-radius: 10px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s ease;
 }
 
-.logout-btn:hover {
+.save-btn:hover {
     background-color: #009acd;
 }
 
-.dashboard-content p {
-    color: #555555;
-    font-size: 16px;
-    line-height: 1.5;
-}
-.close-btn {
-    background-color: #ff4d4d;
-    color: white;
+.cancel-btn {
+    background-color: #ccc;
+    color: #333;
     border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 8px 16px;
+    border-radius: 10px;
     font-weight: bold;
     cursor: pointer;
-    margin-right: 10px;
-    transition: background-color 0.2s ease;
 }
 
-.close-btn:hover {
-    background-color: #cc0000;
+.cancel-btn:hover {
+    background-color: #b3b3b3;
 }

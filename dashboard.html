@@ -11,8 +11,8 @@
     <div class="dashboard-card">
         <div class="dashboard-header">
             <h1>Workspace</h1>
-            <div>
-                <button class="close-btn" onclick="closeDashboard()">X</button>
+            <div class="header-buttons">
+                <button class="profile-btn" onclick="openProfileModal()">PROFILE</button>
                 <button class="logout-btn" onclick="logout()">LOGOUT</button>
             </div>
         </div>
@@ -21,6 +21,20 @@
             <h2>Welcome Back!</h2>
             <p>You have successfully logged into your pixel workspace.</p>
             <p id="user-display-email"></p>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal Overlay -->
+    <div id="profile-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Edit Profile</h3>
+            <label for="edit-email">Email:</label>
+            <input type="email" id="edit-email">
+            
+            <div class="modal-buttons">
+                <button class="save-btn" onclick="saveProfile()">Save</button>
+                <button class="cancel-btn" onclick="closeProfileModal()">Cancel</button>
+            </div>
         </div>
     </div>
 
