@@ -80,24 +80,23 @@ window.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Declare 'result' only ONCE here:
-                const result = await response.json();
+                // Change 'const result' to a unique name like 'apiResponse':
+                const apiResponse = await response.json();
 
                 if (response.ok) {
                     error_message.innerText = ""; 
-
-                    const isSignup = document.getElementById('FirstName-input') !== null;
 
                     if (!isSignup) {
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('userEmail', email_input.value);
                         window.location.href = 'dashboard.html'; 
                     } else {
-                        alert(result.message || "Success!");
+                        alert(apiResponse.message || "Success!");
                         form.reset();
                         window.location.href = 'LoginPage.html';
                     }
                 } else {
-                    error_message.innerText = result.error || "Something went wrong.";
+                    error_message.innerText = apiResponse.error || "Something went wrong.";
                 }
 
 
