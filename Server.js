@@ -162,6 +162,24 @@ app.post('/reset-password', (req, res) => {
     });
 });
 
+// ROUTE: Verify Signup Code
+app.post('/verify-signup', (req, res) => {
+    const { email, code } = req.body;
+    const selectQuery = 'SELECT * FROM users WHERE email = ? AND verification_code = ? AND code_expires > NOW()';
+
+    pool.query(selectQuery, [email, code], (err, results) => {
+        if (err) return res.status(500).json({ error: "Server error during verification." });
+        if (results.length === 0) return res.status(400).json({ error: "Invalid or expired verification code." });
+
+        const updateQuery = 'UPDATE users SET is_verified = TRUE, verification_code = NULL, code_expires = NULL WHERE email = ?';
+        pool.query(updateQuery, [email], (err) => {
+            if (err) return res.status(500).json({ error: "Failed to activate account." });
+            console.log(`🔓 Account successfully verified for: ${email}`);
+            return res.status(200).json({ message: "Account successfully verified! You can now log in." });
+        });
+    });
+});
+
 pool.getConnection((err, connection) => {
     if (err) {
         console.log("❌ Aiven MySQL connection failed:");
