@@ -55,10 +55,12 @@ window.addEventListener('DOMContentLoaded', () => {
                         localStorage.setItem('userEmail', email_input.value);
                         window.location.href = 'dashboard.html'; 
                     } else {
+                        // --- THIS IS THE REDIRECTION TO VERIFY PAGE ---
                         localStorage.setItem('pendingEmail', email_input.value);
                         alert(apiResponse.message || "Registration successful! Please check your email.");
                         form.reset();
                         window.location.href = 'VerifyCode.html';
+                        // ----------------------------------------------
                     }
                 } else {
                     error_message.innerText = apiResponse.error || "Something went wrong.";
