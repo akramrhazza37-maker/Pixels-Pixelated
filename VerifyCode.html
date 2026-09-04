@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="SignUpAndLoginStyle.css">
+    <title>Verify Your Email - Pixels pixelated</title>
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Verify Email</h1>
+        <p id="error-message"></p>
+        <form id="verify-form">
+            <div>
+                <label for="code-input">
+                    <span>#</span>
+                </label>
+                <input type="text" id="code-input" placeholder="Enter 4-digit code" maxlength="4" required>
+            </div>
+            <button type="submit">Verify Code</button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('verify-form');
+        const codeInput = document.getElementById('code-input');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.innerText = "";
+
+            const email = localStorage.getItem('pendingEmail');
+            if (!email) {
+                errorMessage.innerText = "No pending email found. Please sign up again.";
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:3000/verify-signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email, code: codeInput.value })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message);
+                    localStorage.removeItem('pendingEmail');
+                    window.location.href = 'LoginPage.html';
+                } else {
+                    errorMessage.innerText = data.error || "Verification failed.";
+                }
+            } catch (err) {
+                errorMessage.innerText = "Cannot connect to server.";
+            }
+        });
+    </script>
+</body>
+</html>

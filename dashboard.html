@@ -2,45 +2,114 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!----======= CSS ======= -->
     <link rel="stylesheet" href="dashboard.css">
-    <title>Pixels Pixelated - Dashboard</title>
+
+
+    <!----======= Boxicons CSS ======= -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <title>Pixels Pixelated Dashboard</title>
 </head>
 <body>
+    <nav class="sidebar">
+        <header>
+            <div class="image-text">
+                <span class="image">
+                    <img src="profile.png" alt="logo">
+                </span>
 
-    <!-- Profile Button fixed at the top right corner of the page -->
-    <button class="top-right-profile-btn" onclick="openProfileModal()">PROFILE</button>
+                <div class="text header-text">
+                    <span class="name">Guest</span>
+                    <span class="rank">New</span>
+                </div>
+            </div>
 
-    <div class="dashboard-card">
-        <div class="dashboard-header">
-            <h1>Workspace</h1>
-            <div class="header-buttons">
-                <button class="close-btn" onclick="closeDashboard()">CLOSE</button>
-                <button class="logout-btn" onclick="logout()">LOGOUT</button>
+            <i class="bx bx-chevron-right toggle"></i>
+        </header>
+
+        <div class="menu-bar">
+            <div class="menu">
+                <li class="search-box">
+                    <i class="bx bx-search icon" ></i>
+                    <input type="search" placeholder="Search...">
+                </li>
+                <ul class="menu-links">
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class="bx bx-home-alt icon" ></i>
+                            <span class="text nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class="bx bx-code-alt icon" ></i>
+                            <span class="text nav-text">Code</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class="bx bx-book icon" ></i>
+                            <span class="text nav-text">Learn</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class="bx bx-group icon" ></i>
+                            <span class="text nav-text">Collaborate</span>
+                            <i class='bx bxs-crown icon' ></i>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class="bx bx-trophy icon" ></i>
+                            <span class="text nav-text"> Leaderboard </span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class="bx bxs-crown icon" ></i>
+                            <span class="text nav-text">Premium</span>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">
+                            <i class="bx bx-user-circle icon" ></i>
+                            <span class="text nav-text">Profile</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="bottom-content">
+                <li class="">
+                    <a href="#">
+                        <i class="bx bx-log-out icon" ></i>
+                        <span class="text nav-text">Logout</span>
+                    </a>
+                </li>
+
+                <li class="mode">
+                    <div class="moon-sun">
+                        <i class="bx bx-moon icon moon"></i>
+                        <i class="bx bx-sun icon sun"></i>
+                    </div>
+                    <span class="mode-text text">Dark Mode</span>
+
+                    <div class="toggle-switch">
+                        <span class="switch"></span>
+                    </div>
+
+                </li>
+
             </div>
         </div>
-
-        <div class="dashboard-content">
-            <h2>Welcome Back!</h2>
-            <p>You have successfully logged into your pixel workspace.</p>
-            <p id="user-display-email"></p>
-        </div>
-    </div>
-
-    <!-- Edit Profile Modal -->
-    <div id="profile-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h3>Edit Profile</h3>
-            <label for="edit-email">Email:</label>
-            <input type="email" id="edit-email">
-            
-            <div class="modal-buttons">
-                <button class="save-btn" onclick="saveProfile()">Save</button>
-                <button class="cancel-btn" onclick="closeProfileModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
+    </nav>
 
     <script src="dashboard.js"></script>
+
 </body>
 </html>
