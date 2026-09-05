@@ -49,21 +49,24 @@ window.addEventListener('DOMContentLoaded', () => {
                 const apiResponse = await response.json();
 
                 if (response.ok) {
-                    error_message.innerText = ""; 
+                    error_message.innerText = "";
+
                     if (!isSignup) {
                         localStorage.setItem('isLoggedIn', 'true');
                         localStorage.setItem('userEmail', email_input.value);
-                        window.location.href = 'dashboard.html'; 
+
+                        window.location.href = 'dashboard.html';
+
                     } else {
-                        // --- THIS IS THE REDIRECTION TO VERIFY PAGE ---
+                        // Save the email temporarily
                         localStorage.setItem('pendingEmail', email_input.value);
+
                         alert(apiResponse.message || "Registration successful! Please check your email.");
-                        form.reset();
-                        window.location.href = 'VerifyCode.html';
-                        // ----------------------------------------------
+
+                        // Send the email to VerifyCode.html
+                        window.location.href =
+                            `VerifyCode.html?email=${encodeURIComponent(email_input.value)}`;
                     }
-                } else {
-                    error_message.innerText = apiResponse.error || "Something went wrong.";
                 }
             } catch (error) {
                 console.error(error);

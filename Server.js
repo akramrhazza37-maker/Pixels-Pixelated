@@ -18,6 +18,13 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 
 
 app.use(cors());
@@ -38,45 +45,75 @@ const pool = mysql.createPool({
 });
 
 // CONFIGURE LIVE EMAIL TRANSPORTER (Nodemailer)
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER || 'YOUR_EMAIL@gmail.com',         
-        pass: process.env.EMAIL_PASS || 'your_16char_app_password'     
-    }
-});
+
 
 // ROUTE 1: Handle User Signup Form Data
 app.post('/signup', (req, res) => {
     const { username, email, password } = req.body;
-    const sqlQuery = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+
+    const verificationCode =
+        Math.floor(1000 + Math.random() * 9000).toString();
+
+    const sqlQuery =
+        'INSERT INTO users (username, email, password, verification_code) VALUES (?, ?, ?, ?)';
 
     bcrypt.hash(password, 10, (hashErr, hashedPassword) => {
         if (hashErr) {
-            return res.status(500).json({ error: "Password encryption failed." });
+            return res.status(500).json({
+                error: "Password encryption failed."
+            });
         }
 
-        pool.query(sqlQuery, [username, email, hashedPassword], (err, result) => {
-            if (err) {
-                if (err.code === 'ER_DUP_ENTRY') {
-                    console.log(`⚠️ Signup attempt rejected: Duplicate entry found.`);
+        pool.query(
+            sqlQuery,
+            [username, email, hashedPassword, verificationCode],
+            async (err, result) => {
 
-                    if (err.message.includes('username')) {
-                        return res.status(400).json({ error: "This username is already taken." });
-                    } else {
-                        return res.status(400).json({ error: "This email address is already registered." });
+                if (err) {
+                    if (err.code === 'ER_DUP_ENTRY') {
+                        if (err.message.includes('username')) {
+                            return res.status(400).json({
+                                error: "This username is already taken."
+                            });
+                        } else {
+                            return res.status(400).json({
+                                error: "This email address is already registered."
+                            });
+                        }
                     }
+
+                    console.error("Database Save Error:", err.message);
+
+                    return res.status(500).json({
+                        error: "Failed to store user details."
+                    });
                 }
 
-                console.error("❌ Database Save Error:", err.message);
-                return res.status(500).json({ error: "Failed to store user details in database." });
-            }
+                // Send verification email
+                try {
+                    await transporter.sendMail({
+                        from: process.env.EMAIL_USER,
+                        to: email,
+                        subject: "Your verification code",
+                        text: `Your verification code is: ${verificationCode}`
+                    });
 
-            console.log(`✅ Successfully registered user: ${username} (${email})`);
-            return res.status(200).json({
-                message: "Registration successful! Account has been saved."
-            });
-        });
+                    console.log(`Verification code sent to ${email}`);
+
+                    res.status(200).json({
+                        message: "Signup successful!",
+                        email: email
+                    });
+
+                } catch (emailError) {
+                    console.error("Email error:", emailError);
+
+                    res.status(500).json({
+                        error: "Account created, but verification email failed."
+                    });
+                }
+            }
+        );
     });
 });
 
@@ -108,86 +145,58 @@ app.post('/login', (req, res) => {
     });
 });
 
-// ROUTE 3: Request Password Reset Pin and Send Email
-app.post('/forgot-password', (req, res) => {
-    const { email } = req.body;
-
-    pool.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
-        if (err) return res.status(500).json({ error: "Server error." });
-        if (results.length === 0) return res.status(404).json({ error: "No account found with this email." });
-
-        const generatedPin = Math.floor(1000 + Math.random() * 9000).toString();
-        const expirationTime = new Date(Date.now() + 15 * 60 * 1000); 
-
-        const updateQuery = 'UPDATE users SET reset_pin = ?, pin_expires = ? WHERE email = ?';
-        pool.query(updateQuery, [generatedPin, expirationTime, email], (err) => {
-            if (err) return res.status(500).json({ error: "Failed to issue security PIN." });
-            
-            const emailOptions = {
-                from: `"Security Verification" <${process.env.EMAIL_USER || 'YOUR_EMAIL@gmail.com'}>`, 
-                to: email, 
-                subject: 'Password Reset Verification PIN',
-                text: `Hello, \n\nYou have requested a password reset. Your temporary 4-digit security verification PIN is: ${generatedPin}\n\nThis PIN will expire in 15 minutes for your security.`,
-                html: `<h3>Password Reset Verification</h3><p>Your temporary 4-digit security verification PIN is: <b style="font-size: 1.3em; color: #007bff; letter-spacing: 2px;">${generatedPin}</b></p><p>This PIN will expire in 15 minutes.</p>`
-            };
-
-            transporter.sendMail(emailOptions, (mailErr, info) => {
-                if (mailErr) {
-                    console.error("❌ Email Delivery Failure:", mailErr.message);
-                    return res.status(500).json({ error: "Failed to dispatch recovery email. Check server configuration." });
-                }
-                console.log(`✉️ Email dispatched cleanly: ${info.response}`);
-                return res.status(200).json({ message: "Recovery PIN has been sent straight to your email inbox!" });
-            });
-        });
-    });
-});
-
-// ROUTE 4: Verify Pin and Update Password
-app.post('/reset-password', (req, res) => {
-    const { email, pin, newPassword } = req.body;
-    const selectQuery = 'SELECT * FROM users WHERE email = ? AND reset_pin = ? AND pin_expires > NOW()';
-    
-    pool.query(selectQuery, [email, pin], (err, results) => {
-        if (err) return res.status(500).json({ error: "Server authentication error." });
-        if (results.length === 0) return res.status(400).json({ error: "Invalid pin, incorrect email, or security token expired." });
-
-        // Note: For best practices, you should also hash the newPassword here with bcrypt before saving!
-        const updateQuery = 'UPDATE users SET password = ?, reset_pin = NULL, pin_expires = NULL WHERE email = ?';
-        pool.query(updateQuery, [newPassword, email], (err) => {
-            if (err) return res.status(500).json({ error: "Password update compilation error." });
-            console.log(`🔒 Password successfully updated for account: ${email}`);
-            return res.status(200).json({ message: "Password updated successfully! You can now log in." });
-        });
-    });
-});
-
-// ROUTE: Verify Signup Code
-app.post('/verify-signup', (req, res) => {
+app.post('/verify-code', (req, res) => {
     const { email, code } = req.body;
-    const selectQuery = 'SELECT * FROM users WHERE email = ? AND verification_code = ? AND code_expires > NOW()';
 
-    pool.query(selectQuery, [email, code], (err, results) => {
-        if (err) return res.status(500).json({ error: "Server error during verification." });
-        if (results.length === 0) return res.status(400).json({ error: "Invalid or expired verification code." });
+    const sql = 'SELECT verification_code FROM users WHERE email = ?';
 
-        const updateQuery = 'UPDATE users SET is_verified = TRUE, verification_code = NULL, code_expires = NULL WHERE email = ?';
-        pool.query(updateQuery, [email], (err) => {
-            if (err) return res.status(500).json({ error: "Failed to activate account." });
-            console.log(`🔓 Account successfully verified for: ${email}`);
-            return res.status(200).json({ message: "Account successfully verified! You can now log in." });
-        });
+    pool.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({
+                error: "Database error."
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                error: "User not found."
+            });
+        }
+
+        const savedCode = results[0].verification_code;
+
+        // Compare the code from the user with the code in MySQL
+        if (String(code) === String(savedCode)) {
+
+            // Codes match!
+            pool.query(
+                'UPDATE users SET verified = TRUE WHERE email = ?',
+                [email],
+                (updateErr) => {
+                    if (updateErr) {
+                        console.error(updateErr);
+                        return res.status(500).json({
+                            error: "Could not verify account."
+                        });
+                    }
+
+                    res.json({
+                        verified: true,
+                        message: "Verification successful!"
+                    });
+                }
+            );
+
+        } else {
+
+            // Codes don't match
+            res.status(400).json({
+                verified: false,
+                error: "Incorrect verification code."
+            });
+        }
     });
-});
-
-pool.getConnection((err, connection) => {
-    if (err) {
-        console.log("❌ Aiven MySQL connection failed:");
-        console.log(err.message);
-    } else {
-        console.log("✅ Connected to Aiven MySQL!");
-        connection.release();
-    }
 });
 
 const PORT = process.env.PORT || 3000;
