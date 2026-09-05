@@ -33,7 +33,10 @@ function resendCode() {
         // Try again in 2 minutes even if there was an error
         setTimeout(resendCode, 2 * 60 * 1000);
     });
-    if
+    if (resendAmount > 3){
+        verifyButton.disabled = true;
+        timeoutText.textContent = "too many attemps. Disabled verification";
+    }
     resendAmount++;
 }
 
