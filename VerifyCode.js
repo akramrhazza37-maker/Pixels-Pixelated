@@ -1,5 +1,8 @@
 const params = new URLSearchParams(window.location.search);
-const email = params.get("email");
+
+const email =
+    params.get("email") ||
+    localStorage.getItem("pendingEmail");
 
 const form = document.getElementById("verify-form");
 const codeInput = document.getElementById("code-input");
@@ -8,9 +11,25 @@ const verifyButton = document.getElementById("verify-button");
 const timeoutText = document.getElementById("text");
 
 let resendAmount = 0;
+const maxResends = 3;
+
+console.log("Verification email:", email);
 
 function resendCode() {
-    timeoutText.textContent = "Took to long when verifying. Resent code"
+    if (!email) {
+        errorMessage.innerText = "No email address was provided.";
+        return;
+    }
+
+    if (resendAmount >= maxResends) {
+        verifyButton.disabled = true;
+        timeoutText.textContent = "Too many attempts. Verification disabled.";
+        return;
+    }
+
+    timeoutText.textContent =
+        "Took too long when verifying. Resending code...";
+
     fetch("http://localhost:3000/resend-code", {
         method: "POST",
         headers: {
@@ -24,24 +43,29 @@ function resendCode() {
     .then(data => {
         console.log("Code resent:", data);
 
-        // Wait another 2 minutes, then resend again
+        resendAmount++;
+
+        if (resendAmount >= maxResends) {
+            verifyButton.disabled = true;
+            timeoutText.textContent =
+                "Too many attempts. Verification disabled.";
+            return;
+        }
+
+        // Wait 2 minutes before the next resend
         setTimeout(resendCode, 2 * 60 * 1000);
     })
     .catch(error => {
         console.error("Resend error:", error);
 
-        // Try again in 2 minutes even if there was an error
+        // Try again in 2 minutes
         setTimeout(resendCode, 2 * 60 * 1000);
     });
-    if (resendAmount > 3){
-        verifyButton.disabled = true;
-        timeoutText.textContent = "too many attemps. Disabled verification";
-    }
-    resendAmount++;
 }
 
-// Start the first 2-minute timer
+// First resend after 2 minutes
 setTimeout(resendCode, 2 * 60 * 1000);
+
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -73,6 +97,7 @@ form.addEventListener("submit", async (e) => {
         const data = await response.json();
 
         if (response.ok && data.verified) {
+            localStorage.removeItem("pendingEmail");
             alert("Your account has been verified!");
             window.location.href = "dashboard.html";
         } else {
