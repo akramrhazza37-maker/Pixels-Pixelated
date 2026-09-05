@@ -199,6 +199,44 @@ app.post('/verify-code', (req, res) => {
     });
 });
 
+app.post("/resend-code", async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ error: "Email is required." });
+    }
+
+    // Generate a new 4-digit code
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+
+    try {
+        // Update the user's verification code
+        await db.promise().query(
+            "UPDATE users SET verification_code = ? WHERE email = ?",
+            [code, email]
+        );
+
+        // Send the new code
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "Your new verification code",
+            text: `Your new verification code is: ${code}`
+        });
+
+        console.log(`Verification code resent to ${email}`);
+
+        res.json({ message: "Verification code resent!" });
+
+    } catch (error) {
+        console.error("Resend email error:", error);
+
+        res.status(500).json({
+            error: "Could not resend verification code."
+        });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`===================================================`);

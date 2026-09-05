@@ -47,6 +47,11 @@ h1{
     text-transform: uppercase;
 }
 
+.text{
+    color: var(--text-color);
+    font-size: 10px;
+}
+
 form{
     width: min(400px, 100%);
     margin-top: 20px;
